@@ -10,27 +10,34 @@ class Solution(object):
         :type l2: Optional[ListNode]
         :rtype: Optional[ListNode]
         """
-        dummy_head = ListNode(0)
-        current = dummy_head
+        result = None
+        current = None
         carry = 0
         
-        while l1 is not None or l2 is not None or carry:
-            val1 = l1.val if l1 is not None else 0
-            val2 = l2.val if l2 is not None else 0
+        while l1 or l2 or carry:
+            # Get values from current nodes (or 0 if node is None)
+            val1 = l1.val if l1 else 0
+            val2 = l2.val if l2 else 0
             
+            # Calculate sum and carry
             total = val1 + val2 + carry
             carry = total // 10
-            new_digit = total % 10
+            digit = total % 10
             
-            current.next = ListNode(new_digit)
-            current = current.next
+            # Create new node
+            new_node = ListNode(digit)
             
-            if l1 is not None:
+            # Link it to the result list
+            if not result:
+                result = new_node
+                current = result
+            else:
+                current.next = new_node
+                current = current.next
+            
+            # Move to next nodes if they exist
+            if l1:
                 l1 = l1.next
-            if l2 is not None:
+            if l2:
                 l2 = l2.next
         
-        return dummy_head.nex
-    
-solution = Solution()
-print(solution.addTwoNumbers([2,4,3], [5,6,4]))
