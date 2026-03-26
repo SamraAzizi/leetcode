@@ -1,31 +1,69 @@
 class Solution(object):
-    def makeLargestSpecial(self, s):
+    def canPartitionGrid(self, grid):
         """
-        :type s: str
-        :rtype: str
+        :type grid: List[List[int]]
+        :rtype: bool
         """
-        
-        if not s:
-            return ""
-        
-        # Find all special substrings at the current level
-        count = 0
-        start = 0
-        specials = []
-        
-        for i, char in enumerate(s):
-            count += 1 if char == '1' else -1
-            
-            # When count becomes 0, we've found a complete special substring
-            if count == 0:
-                # Recursively process the inner part (without the outer 1 and 0)
-                inner = self.makeLargestSpecial(s[start + 1:i])
-                # Add back the outer 1 and 0 with the processed inner part
-                specials.append('1' + inner + '0')
-                start = i + 1
-        
-        # Sort special substrings in descending order for lexicographically largest result
-        specials.sort(reverse=True)
-        
-        # Combine them
-        return ''.join(specials)
+        total_sum = sum(sum(rows) for rows in grid)
+
+        def check_hor_cut(grid):
+            m = len(grid)
+            n = len(grid[0])
+            seen = set()
+            top = 0
+
+            for i in range(m - 1):
+                for j in range(n):
+                    top += grid[i][j]
+                    seen.add(grid[i][j])
+
+                bottom = total_sum - top
+                diff = top - bottom
+
+                if diff == 0:
+                    return True
+
+                if diff == grid[0][0]:
+                    return True
+
+                if diff == grid[0][n - 1]:
+                    return True
+
+                if diff == grid[i][0]:
+                    return True
+
+                if i > 0 and n > 1 and diff in seen:
+                    return True
+
+            return False
+
+        # Check horizontal cuts
+        if check_hor_cut(grid):
+            return True
+
+        grid.reverse()
+
+        if check_hor_cut(grid):
+            return True
+
+        grid.reverse()
+
+        # Check vertical cuts using transpose
+        m = len(grid)
+        n = len(grid[0])
+
+        transpose_mat = [[0] * m for _ in range(n)]
+
+        for i in range(m):
+            for j in range(n):
+                transpose_mat[j][i] = grid[i][j]
+
+        if check_hor_cut(transpose_mat):
+            return True
+
+        transpose_mat.reverse()
+
+        if check_hor_cut(transpose_mat):
+            return True
+
+        return False
