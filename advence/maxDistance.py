@@ -1,0 +1,76 @@
+from bisect import bisect_left
+
+class Solution(object):
+    def maxDistance(self, side, points, k):
+        """
+        :type side: int
+        :type points: List[List[int]]
+        :type k: int
+        :rtype: int
+        """
+
+        def two_2_oneD(x, y):
+            
+            if x ==0:
+                return y
+
+            elif y==side:
+                return side + x
+
+            elif x==side:
+                return 3*side - y
+
+            else:
+                return 4*side - x
+
+        
+        perim = [two_2_oneD(x,y) for x,y in points]
+        perim.sort()
+
+        n = len(perim)
+        perimeter = 4*side
+
+        ext_perim = perim + [perimeter + p for p in perim]
+
+        def can_we(d):
+            for i in range(n):
+                # from p if we able to react the end by hopping k \
+                #times then it is we_can return true
+                count = 1
+                idx=i
+                e=ext_perim[i]
+                last = e
+                
+                for _ in range(k-1):
+                    # we look for an next e that is >= d + last
+                    next_idx = bisect_left(ext_perim, last + d, idx + 1, i + n)
+                    if next_idx == i+n:
+                        break
+                    
+                    last = ext_perim[next_idx]
+                    idx = next_idx
+                    count+=1
+
+                if count >= k:
+                        if perimeter - (last - e) >= d:
+                            return True
+
+                
+            return False
+
+        #main coding
+        low = 0
+        high = 2*side
+        ans = 0
+
+        while low <= high:
+
+            mid = (low + high)//2
+            if can_we(mid):
+                ans = mid
+                low = mid+1
+
+            else:
+                high = mid-1
+
+        return ans
