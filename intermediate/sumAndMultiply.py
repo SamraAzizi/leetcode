@@ -5,13 +5,14 @@ class Solution(object):
         :type queries: List[List[int]]
         :rtype: List[int]
         """
-        n = len(s)
+        n= len(s)
         m = len(queries)
-        MOD = 10**9 + 7
+
+        MOD = 10 ** 9 + 7
 
         prefSum = [0] * (n + 1)
-        prefVal = [0] * (n + 1)
         prefCnt = [0] * (n + 1)
+        prefVal = [0] * (n + 1)
         power = [1] * (n + 1)
 
         for i in range(1, n + 1):
